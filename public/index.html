@@ -1,54 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080d18">
-<title>D SIREN MD — WhatsApp Bot Platform</title>
-<link rel="stylesheet" href="/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b12">
+  <title>D SIREN MD | WhatsApp Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
 </head>
 <body>
-<header>
-  <div class="logo">D SIREN MD</div>
-  <nav>
-    <a href="#features">Features</a>
-    <a href="#connect">Connect</a>
-    <a href="#about">About</a>
-  </nav>
-</header>
-<main>
-  <div class="hero">
-    <span class="tag">● YOUR WHATSAPP BOT PLATFORM</span>
-    <h1>Manage your bots.<br><span>Make things happen.</span></h1>
-    <p>Welcome to D SIREN MD — a platform designed to make managing your WhatsApp bot simple, organised and accessible.</p>
-    <a class="btn" href="#connect">Get started</a>
-    <a class="btn secondary" href="#features">Explore features</a>
-  </div>
-  <section id="features">
-    <h2 class="section-title">Platform features</h2>
-    <p class="section-sub">Everything organised in one place.</p>
-    <div class="cards">
-      <article class="card"><h3>Bot commands</h3><p>Use helpful commands for information, utilities and bot management.</p></article>
-      <article class="card"><h3>Bot dashboard</h3><p>A central place to view your bot connection and settings.</p></article>
-      <article class="card"><h3>Secure accounts</h3><p>Designed with account separation and protected configuration in mind.</p></article>
-      <article class="card"><h3>Easy management</h3><p>Manage your bot settings through a clean, simple interface.</p></article>
-    </div>
-  </section>
-  <section id="connect">
-    <h2 class="section-title">Connect your bot</h2>
-    <p class="section-sub">The connection dashboard is coming soon.</p>
-    <div class="panel">
-      <h3>WhatsApp connection</h3>
-      <p>Bot pairing and account management will be enabled after the secure backend is ready.</p>
-      <input type="text" placeholder="Connection status" value="Coming soon" disabled>
-      <a class="btn" href="mailto:support@dsirenmd.example">Contact support</a>
-    </div>
-  </section>
-  <section id="about">
-    <h2 class="section-title">About D SIREN MD</h2>
-    <p class="section-sub">A new home for organised WhatsApp bot management.</p>
-  </section>
-</main>
-<footer>© 2026 D SIREN MD. Built with purpose.</footer>
+  <header>
+    <h1>D SIREN MD</h1>
+    <p>WhatsApp Automation Dashboard</p>
+  </header>
+
+  <main>
+    <section id="auth-section">
+      <h2>Your Account</h2>
+
+      <form id="register-form">
+        <h3>Create Account</h3>
+        <input id="register-email" type="email"
+          placeholder="Email address" required>
+        <input id="register-password" type="password"
+          placeholder="Password (8+ characters)" required>
+        <button type="submit">Register</button>
+      </form>
+
+      <form id="login-form">
+        <h3>Login</h3>
+        <input id="login-email" type="email"
+          placeholder="Email address" required>
+        <input id="login-password" type="password"
+          placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+    </section>
+
+    <section id="dashboard" hidden>
+      <h2>WhatsApp Connection</h2>
+      <p id="account-info"></p>
+
+      <form id="pair-form">
+        <input id="phone-number" type="tel"
+          placeholder="International number e.g. 2547XXXXXXXX"
+          required>
+        <button type="submit">Generate Pairing Code</button>
+      </form>
+
+      <p id="pair-result" aria-live="polite"></p>
+      <p id="connection-status">Disconnected</p>
+
+      <button id="logout-button" type="button">Logout</button>
+    </section>
+
+    <p id="message" aria-live="polite"></p>
+  </main>
+
+  <footer>
+    <p>© 2026 D SIREN MD. All rights reserved.</p>
+  </footer>
 </body>
 </html>

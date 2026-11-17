@@ -1,6 +1,7 @@
 import {
   BufferJSON,
-  initAuthCreds
+  initAuthCreds,
+  proto
 } from "@whiskeysockets/baileys";
 
 import { supabase } from "../database/supabase.js";
@@ -20,27 +21,14 @@ async function loadData(userId) {
 
   if (!data?.session_data) return null;
 
-  const saved = decryptSession(data.session_data);
+  const decrypted = decryptSession(data.session_data);
+  const saved = JSON.parse(decrypted, BufferJSON.reviver);
 
-  return JSON.parse(saved, BufferJSON.reviver);
-}
+  if (!saved.creds || !saved.keys) {
+    throw new Error("Invalid saved session");
+  }
 
-async function saveData(userId, state) {
-  const serialized = JSON.stringify(state, BufferJSON.replacer);
-  const encrypted = encryptSession(serialized);
-
-  const { error } = await supabase
-    .from("whatsapp_sessions")
-    .upsert({
-      user_id: userId,
-      session_data: encrypted,
-      status: "disconnected",
-      updated_at: new Date().toISOString()
-    }, {
-      onConflict: "user_id"
-    });
-
-  if (error) throw error;
+  return saved;
 }
 
 export async function createSessionStore(userId) {
@@ -51,12 +39,47 @@ export async function createSessionStore(userId) {
     keys: {}
   };
 
+  let writeQueue = Promise.resolve();
+
+  async function persist() {
+    writeQueue = writeQueue.catch(() => {}).then(async () => {
+      const serialized = JSON.stringify(
+        state,
+        BufferJSON.replacer
+      );
+
+      const encrypted = encryptSession(serialized);
+
+      const { error } = await supabase
+        .from("whatsapp_sessions")
+        .upsert({
+          user_id: userId,
+          session_data: encrypted,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: "user_id"
+        });
+
+      if (error) throw error;
+    });
+
+    return writeQueue;
+  }
+
   const keys = {
     get: async (type, ids) => {
       const result = {};
+      const bucket = state.keys[type] || {};
 
       for (const id of ids) {
-        result[id] = state.keys[type]?.[id];
+        const value = bucket[id];
+
+        if (value !== undefined && value !== null) {
+          result[id] =
+            type === "app-state-sync-key"
+              ? proto.Message.AppStateSyncKeyData.fromObject(value)
+              : value;
+        }
       }
 
       return result;
@@ -69,15 +92,17 @@ export async function createSessionStore(userId) {
         for (const [id, value] of Object.entries(entries)) {
           if (value === null) {
             delete state.keys[type][id];
-          } else {
+          } else if (value !== undefined) {
             state.keys[type][id] = value;
           }
         }
       }
 
-      await saveData(userId, state);
+      await persist();
     }
   };
+
+  await persist();
 
   return {
     state: {
@@ -85,8 +110,6 @@ export async function createSessionStore(userId) {
       keys
     },
 
-    saveCreds: async () => {
-      await saveData(userId, state);
-    }
+    saveCreds: persist
   };
 }

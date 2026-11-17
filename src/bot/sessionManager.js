@@ -1,4 +1,4 @@
-	mport makeWASocket, {
+	import makeWASocket, {
   DisconnectReason
 } from "@whiskeysockets/baileys";
 
