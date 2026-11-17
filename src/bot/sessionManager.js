@@ -55,7 +55,7 @@ export async function requestPairingCode(userId, phoneNumber) {
       await updateStatus(userId, "disconnected");
 
       const code = lastDisconnect?.error?.output?.statusCode;
-
+console.log("WhatsApp disconnect status:", code ?? "unknown");
       if (code === DisconnectReason.loggedOut) {
         console.log("WhatsApp session logged out");
       }
