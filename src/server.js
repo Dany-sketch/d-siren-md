@@ -1,16 +1,16 @@
-import express from "express";
+import whatsappRouter from "./routes/whatsapp.js";import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import "dotenv/config";
-
+import authRouter from "./routes/auth.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
 app.use(cors());
-app.use(express.json({ limit: "10kb" }));
+app.use(express.json({ limit: "10kb" }));app.use("/api/whatsapp", whatsappRouter);
 app.use(express.static("public"));
-
+app.use("/api/auth", authRouter);
 app.get("/", (req, res) => {
   res.json({
     name: "D SIREN MD",
